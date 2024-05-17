@@ -19,12 +19,11 @@ package org.apache.arrow.vector;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.ByteBuffer;
+import java.util.*;
 
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.vector.complex.AbstractStructVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.StructVector;
@@ -35,9 +34,11 @@ import org.apache.arrow.vector.complex.writer.IntWriter;
 import org.apache.arrow.vector.holders.ComplexHolder;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.Types.MinorType;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.Struct;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
+import org.apache.arrow.vector.types.pojo.TestExtensionType;
 import org.apache.arrow.vector.util.TransferPair;
 import org.junit.After;
 import org.junit.Assert;
@@ -80,6 +81,17 @@ public class TestStructVector {
       assertEquals(0, toChild.getDataBuffer().capacity());
       assertEquals(0, toChild.getValidityBuffer().capacity());
     }
+  }
+
+  @Test
+  public void testStructWriterWithExtensionTypes() {
+    TestExtensionType.UuidType uuidType = new TestExtensionType.UuidType();
+    Field uuidField =  new Field("struct_child", FieldType.nullable(uuidType), null);
+    Field structField = new Field("struct", FieldType.nullable(new ArrowType.Struct()), List.of(uuidField));
+    // throws
+    StructVector s1 = new StructVector(structField, allocator, null);
+    // doesn't throw
+    StructVector s2 = (StructVector) structField.createVector(allocator);
   }
 
   @Test
