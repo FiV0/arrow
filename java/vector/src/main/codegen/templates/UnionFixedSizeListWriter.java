@@ -193,6 +193,17 @@ public class UnionFixedSizeListWriter extends AbstractFieldWriter {
   }
 
   @Override
+  public ExtensionWriter extension() {
+    return writer;
+  }
+
+  @Override
+  public ExtensionWriter extension(String name) {
+    ExtensionWriter extensionWriter = writer.extension(name);
+    return extensionWriter;
+  }
+
+  @Override
   public void startList() {
     int start = vector.startNewValue(idx());
     writer.setPosition(start);

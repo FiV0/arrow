@@ -165,6 +165,10 @@ public class UnionWriter extends AbstractFieldWriter implements FieldWriter {
     }
     return mapWriter;
   }
+  
+  private ExtensionWriter getExtensionWriter(ArrowType arrowType) {
+    throw new UnsupportedOperationException("ExtensionTypes are not supported yet.");
+  }
 
   public MapWriter asMap(ArrowType arrowType) {
     data.setType(idx(), MinorType.MAP);
@@ -183,6 +187,8 @@ public class UnionWriter extends AbstractFieldWriter implements FieldWriter {
       return getListWriter();
     case MAP:
       return getMapWriter(arrowType);
+    case EXTENSIONTYPE:
+      return getExtensionWriter(arrowType);
     <#list vv.types as type>
       <#list type.minor as minor>
         <#assign name = minor.class?cap_first />
@@ -401,6 +407,21 @@ public class UnionWriter extends AbstractFieldWriter implements FieldWriter {
     getStructWriter().setPosition(idx());
     return getStructWriter().map(name, keysSorted);
   }
+
+  @Override
+  public ExtensionWriter extension() {
+    data.setType(idx(), MinorType.EXTENSIONTYPE);
+    getListWriter().setPosition(idx());
+    return getListWriter().extension();
+  }
+
+  @Override
+  public ExtensionType extension(String name) {
+    data.setType(idx(), MinorType.EXTENSIONTYPE);
+    getStructWriter().setPosition(idx());
+    return getStructWriter().extension(name);
+  }
+
 
   <#list vv.types as type><#list type.minor as minor>
   <#assign lowerName = minor.class?uncap_first />

@@ -61,11 +61,15 @@ public interface BaseWriter extends AutoCloseable, Positionable {
 
     void copyReaderToField(String name, FieldReader reader);
     StructWriter struct(String name);
+    ExtensionWriter extension(String name);
     ListWriter list(String name);
     MapWriter map(String name);
     MapWriter map(String name, boolean keysSorted);
     void start();
     void end();
+  }
+
+  public interface ExtensionWriter extends StructWriter {
   }
 
   public interface ListWriter extends BaseWriter {

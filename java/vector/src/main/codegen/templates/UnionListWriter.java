@@ -179,6 +179,17 @@ public class Union${listName}Writer extends AbstractFieldWriter {
     return mapWriter;
   }
 
+  @Override
+  public ExtensionWriter extension() {
+    return writer;
+  }
+
+  @Override
+  public ExtensionWriter extension(String name) {
+    ExtensionWriter extensionWriter = writer.extension(name);
+    return extensionWriter;
+  }
+
   <#if listName == "LargeList">
   @Override
   public void startList() {
